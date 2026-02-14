@@ -75,4 +75,20 @@ public class TarefaController {
 
         }).orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
     }
+
+    @DeleteMapping("/{id}")
+    public void deletar(@PathVariable Long id, Principal principal) {
+        Tarefa tarefa = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+
+        // Só permite excluir tarefas do usuário logado
+        Usuario usuario = usuarioRepository.findByEmail(principal.getName())
+                .orElseThrow();
+
+        if (!tarefa.getUsuario().getId().equals(usuario.getId())) {
+            throw new RuntimeException("Acesso negado");
+        }
+
+        repository.delete(tarefa);
+    }
 }

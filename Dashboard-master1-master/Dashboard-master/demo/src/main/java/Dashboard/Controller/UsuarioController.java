@@ -2,6 +2,8 @@ package Dashboard.Controller;
 
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 
 
@@ -42,6 +43,23 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+
+    private Usuario usuarioLogado() {
+
+        Object principal = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        if (principal instanceof UserDetails userDetails) {
+            return usuarioRepository.findByEmail(userDetails.getUsername())
+                    .orElse(null);
+        }
+
+        return null;
+    }
+
 
     // ================= FOTO =================
 

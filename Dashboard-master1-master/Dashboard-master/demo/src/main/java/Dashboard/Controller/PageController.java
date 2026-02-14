@@ -4,6 +4,8 @@ import Dashboard.Entity.Usuario;
 import Dashboard.Repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,29 +16,34 @@ public class PageController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    private Usuario getUsuarioLogado() {
+
+        Object principal = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        if (principal instanceof UserDetails userDetails) {
+            return usuarioRepository.findByEmail(userDetails.getUsername())
+                    .orElse(null);
+        }
+
+        return null;
+    }
+
     @GetMapping("/cadastro")
-    public String paginaCadastro(Model model, Authentication authentication) {
+    public String paginaCadastro(Model model) {
 
-        String email = authentication.getName(); // email do usuário logado
-
-        Usuario usuario = usuarioRepository
-                .findByEmail(email)
-                .orElse(new Usuario());
-
+        Usuario usuario = getUsuarioLogado();
         model.addAttribute("usuario", usuario);
 
         return "cadastro";
     }
 
     @GetMapping("/dashboard")
-    public String abrirDashboard(Model model, Authentication authentication) {
+    public String abrirDashboard(Model model) {
 
-        String email = authentication.getName();
-
-        Usuario usuario = usuarioRepository
-                .findByEmail(email)
-                .orElse(new Usuario());
-
+        Usuario usuario = getUsuarioLogado();
         model.addAttribute("usuario", usuario);
 
         return "dashboard";

@@ -8,8 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.*; // ou javax.persistence.* se usar Java antigo
 
 @Entity
-@Table(name = "tarefas") // Força o nome da tabela
+@Table(name = "tarefas")
 public class Tarefa {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,8 +18,19 @@ public class Tarefa {
     private String descricao;
     private boolean concluida;
 
-    // Construtor vazio OBRIGATÓRIO para o JPA
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
     public Tarefa() {}
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
     // Getters e Setters OBRIGATÓRIOS para o JSON
     public Long getId() { return id; }

@@ -38,7 +38,7 @@
         <a href="/cadastro" class="item-menu">Cadastro</a>
         <a th:href="@{/progresso}" class="item-menu">Progresso</a>
         <div class="item-menu">Teste 3</div>
-        <div class="item-menu">Teste 4</div>
+        <a href="/dashboard" class="item-menu">Dashboard</a>
     </div>
 
     <div class="sair">
@@ -75,10 +75,13 @@
                 <div class="lista-container" id="listaTarefas"></div>
             </div>
 
+
+
             <div class="box anotacao">
                 <h3>BLOCO DE NOTAS</h3>
                 <textarea placeholder="Digite suas notas aqui..."></textarea>
             </div>
+
 
             <div class="box extra">
                 <div class="calendario-header">
@@ -254,73 +257,75 @@ textarea.addEventListener('input', () => {
 });
 
 
-
 const API_URL = "http://localhost:8080/api/tarefas";
 
-// Função para buscar do banco e desenhar na tela
+// LISTAR
 async function listarTarefas() {
-    try {
-        const resposta = await fetch(API_URL);
-        const tarefas = await resposta.json();
-        const container = document.getElementById("listaTarefas");
+    const resposta = await fetch(API_URL);
+    const tarefas = await resposta.json();
+    const container = document.getElementById("listaTarefas");
 
-        container.innerHTML = ""; // Limpa a lista
+    container.innerHTML = "";
 
-        tarefas.forEach(tarefa => {
-            container.innerHTML += `
-                <div class="tarefa-item">
-                    <div class="tarefa-info">
-                        <input type="checkbox" ${tarefa.concluida ? 'checked' : ''} onchange="alternarStatus(${tarefa.id}, this.checked)">
-                        <label>${tarefa.descricao}</label>
-                    </div>
-                    <div class="tarefa-acoes">
-                        <button class="btn-delete" onclick="excluirTarefa(${tarefa.id})">×</button>
-                    </div>
-                </div>
-            `;
-        });
-    } catch (error) {
-        console.error("Erro ao carregar lista:", error);
-    }
+    tarefas.forEach(tarefa => {
+container.innerHTML += `
+    <div class="tarefa-item">
+        <div class="tarefa-info">
+            <input type="checkbox"
+                ${tarefa.concluida ? 'checked' : ''}
+                onchange="alternarStatus(${tarefa.id}, this.checked)">
+            <label>${tarefa.descricao}</label>
+        </div>
+
+        <button class="btn-delete" onclick="excluirTarefa(${tarefa.id})">×</button>
+    </div>
+`;
+    });
 }
 
-// Função para adicionar
+// ADICIONAR
 async function adicionarTarefa() {
+
     const input = document.getElementById("inputNovaTarefa");
 
-    if (!input.value.trim()) {
-        alert("Digite uma tarefa antes de adicionar!");
-        return;
-    }
+    if (!input.value.trim()) return;
 
-    try {
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                descricao: input.value,
-                concluida: false
-            })
-        });
+    await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            descricao: input.value,
+            concluida: false
+        })
+    });
 
-        if (res.ok) {
-            input.value = ""; // Limpa o campo
-            listarTarefas(); // Atualiza a lista sem recarregar
-        }
-    } catch (error) {
-        alert("Erro ao conectar com o servidor Spring!");
-    }
+    input.value = "";
+    listarTarefas();
 }
 
-// Função para excluir
+// CHECKBOX
+async function alternarStatus(id, concluida) {
+
+    await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            concluida: concluida
+        })
+    });
+}
+
+// EXCLUIR
 async function excluirTarefa(id) {
-    if (confirm("Excluir esta tarefa?")) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        listarTarefas();
-    }
+
+    await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
+    });
+
+    listarTarefas();
 }
 
-// CARREGAR AO INICIAR
+// AUTO LOAD
 document.addEventListener("DOMContentLoaded", listarTarefas);
 </script>
 

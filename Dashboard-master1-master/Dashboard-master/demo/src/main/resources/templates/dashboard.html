@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard2.css">
+</head>
+<body>
+
+<video autoplay muted loop id="bg-video">
+    <source src="/videos/video.mp4" type="video/mp4">
+</video>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->  <aside class="sidebar">
+
+    <div class="perfil">
+        <h2>Meu Dashboard</h2>
+
+        <div class="perfil-info">
+            <a th:href="@{/cadastro}">
+                <img th:src="${usuario?.fotoUrl != null ? usuario.fotoUrl : '/videos/default-avatar.png'}"
+                     alt="Foto de Perfil"
+                     class="foto-perfil"
+                     style="cursor: pointer;"> </a>
+
+            <div class="texto-perfil">
+                <p class="nome-usuario" th:text="${usuario?.nome != null ? usuario.nome : 'Usuário'}">Nome do Usuário</p>
+                <p class="status-usuario">Online</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-meio">
+        <a href="/cadastro" class="item-menu">Cadastro</a>
+        <a th:href="@{/progresso}" class="item-menu">Progresso</a>
+        <div class="item-menu">Teste 3</div>
+        <div class="item-menu">Teste 4</div>
+    </div>
+
+    <div class="sair">
+        <a href="/login">
+            <img src="/videos/sair.png" alt="Sair" class="icon">
+            Sair
+        </a>
+    </div>
+</aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main">
+        <div class="dashboard-grid">
+            <div class="box tempo">
+                <div id="data-hora" style="color: #ffffff; font-size: 0.8rem; opacity: 0.7; margin-bottom: 8px;"></div>
+
+                <h3 id="cidade">Carregando...</h3>
+
+                <div id="dados-tempo">
+                    <p id="temperatura" style="font-size: 2.5rem; font-weight: bold; color: #27ae60; margin: 0;"></p>
+                    <p id="descricao" style="text-transform: capitalize; color: #ffffff; opacity: 0.8;"></p>
+                </div>
+            </div>
+
+
+            <div class="box tarefas">
+                <h3>Lista de tarefas</h3>
+
+                <div class="novo-item-container">
+                    <input type="text" id="inputNovaTarefa" placeholder="Nova tarefa...">
+                    <button onclick="adicionarTarefa()" class="btn-add">➜</button>
+                </div>
+
+                <div class="lista-container" id="listaTarefas"></div>
+            </div>
+
+            <div class="box anotacao">
+                <h3>BLOCO DE NOTAS</h3>
+                <textarea placeholder="Digite suas notas aqui..."></textarea>
+            </div>
+
+            <div class="box extra">
+                <div class="calendario-header">
+                    <button onclick="mudarMes(-1)">&#10094;</button>
+                    <h3 id="mes-ano">Mês Ano</h3>
+                    <button onclick="mudarMes(1)">&#10095;</button>
+                </div>
+                <div class="calendario-grid">
+                    <div class="dia-semana">Dom</div>
+                    <div class="dia-semana">Seg</div>
+                    <div class="dia-semana">Ter</div>
+                    <div class="dia-semana">Qua</div>
+                    <div class="dia-semana">Qui</div>
+                    <div class="dia-semana">Sex</div>
+                    <div class="dia-semana">Sáb</div>
+                </div>
+                <div id="dias-container" class="calendario-grid"></div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+
+
+<script>
+    async function atualizarTempo() {
+            if (!navigator.geolocation) {
+                document.getElementById('cidade').innerText = "GPS não suportado";
+                return;
+            }
+
+            // 2. Pede a localização atual
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                try {
+                    // 3. Chamada ao seu Backend Java
+                    const response = await fetch(`/api/clima/coordenadas?lat=${lat}&lon=${lon}`);
+                    if (!response.ok) throw new Error("Erro no servidor");
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        document.getElementById('cidade').innerText = data.error;
+                        return;
+                    }
+
+                    // --- AJUSTE DA CIDADE (Correção Porto Rico -> PR) ---
+                    let nomeCidade = data.city;
+                    if (nomeCidade.includes("Paraná")) {
+                        nomeCidade = nomeCidade.replace("Curitiba", "PR");
+                    }
+                    document.getElementById('cidade').innerText = nomeCidade;
+
+                    // --- PREENCHIMENTO DOS DADOS ---
+                    document.getElementById('temperatura').innerText = data.temp + "°C";
+                    document.getElementById('descricao').innerText = data.description;
+
+                    // --- ÍCONE DA HG BRASIL ---
+                    const imgElement = document.getElementById('icone-clima');
+                    if (imgElement) {
+                        imgElement.src = `https://assets.hgbrasil.com/weather/icons/conditions/${data.condition_code}.svg`;
+                        imgElement.style.filter = "drop-shadow(0 0 5px rgba(39, 174, 96, 0.5))"; // Brilho neon no ícone
+                        imgElement.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error("Erro:", error);
+                    document.getElementById('cidade').innerText = "Erro ao conectar no Java";
+                }
+            }, (error) => {
+                document.getElementById('cidade').innerText = "GPS Bloqueado";
+            });
+        }
+
+        // --- FUNÇÃO DO RELÓGIO (Com correção de quebra de linha) ---
+        function atualizarRelogio() {
+            const agora = new Date();
+
+            // Formato mais curto para evitar quebras: "Qui, 12 de Fev | 10:55"
+            const dataFormatada = agora.toLocaleDateString('pt-BR', {
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short'
+            });
+            const horaFormatada = agora.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            const elementoData = document.getElementById('data-hora');
+            if (elementoData) {
+                // Deixa a primeira letra maiúscula (Ex: Qui -> Qui)
+                const textoFinal = (dataFormatada + " | " + horaFormatada).replace(/^\w/, (c) => c.toUpperCase());
+                elementoData.innerText = textoFinal;
+            }
+        }
+
+        // Inicialização
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio();
+        atualizarTempo();
+
+
+
+
+
+  // --- CALENDARIO ---
+
+
+    let dataAtual = new Date();
+
+function renderizarCalendario() {
+    const mesAno = document.getElementById("mes-ano");
+    const diasContainer = document.getElementById("dias-container");
+
+    // Configura o mês e ano no topo
+    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    mesAno.innerText = `${meses[dataAtual.getMonth()]} ${dataAtual.getFullYear()}`;
+
+    // Limpa os dias anteriores
+    diasContainer.innerHTML = "";
+
+    // Lógica para calcular dias
+    const primeiroDiaMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1).getDay();
+    const ultimoDiaMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, 0).getDate();
+
+    // Adiciona espaços vazios para alinhar o primeiro dia da semana
+    for (let i = 0; i < primeiroDiaMes; i++) {
+        diasContainer.innerHTML += `<div></div>`;
+    }
+
+    // Adiciona os dias do mês
+    for (let dia = 1; dia <= ultimoDiaMes; dia++) {
+        const hoje = new Date();
+        const ehHoje = dia === hoje.getDate() &&
+                       dataAtual.getMonth() === hoje.getMonth() &&
+                       dataAtual.getFullYear() === hoje.getFullYear();
+
+        diasContainer.innerHTML += `<div class="dia ${ehHoje ? 'hoje' : ''}">${dia}</div>`;
+    }
+}
+
+function mudarMes(direcao) {
+    dataAtual.setMonth(dataAtual.getMonth() + direcao);
+    renderizarCalendario();
+}
+
+renderizarCalendario();
+
+
+
+
+    // Bloco de notas
+
+const textarea = document.querySelector('.box.anotacao textarea');
+
+// 1. Ao carregar a página, verifica se já existe algo salvo
+window.onload = () => {
+    const notaSalva = localStorage.getItem('minhasAnotacoes');
+    if (notaSalva) {
+        textarea.value = notaSalva;
+    }
+};
+
+// 2. Salva automaticamente enquanto o usuário digita
+textarea.addEventListener('input', () => {
+    localStorage.setItem('minhasAnotacoes', textarea.value);
+});
+
+
+
+const API_URL = "http://localhost:8080/api/tarefas";
+
+// Função para buscar do banco e desenhar na tela
+async function listarTarefas() {
+    try {
+        const resposta = await fetch(API_URL);
+        const tarefas = await resposta.json();
+        const container = document.getElementById("listaTarefas");
+
+        container.innerHTML = ""; // Limpa a lista
+
+        tarefas.forEach(tarefa => {
+            container.innerHTML += `
+                <div class="tarefa-item">
+                    <div class="tarefa-info">
+                        <input type="checkbox" ${tarefa.concluida ? 'checked' : ''} onchange="alternarStatus(${tarefa.id}, this.checked)">
+                        <label>${tarefa.descricao}</label>
+                    </div>
+                    <div class="tarefa-acoes">
+                        <button class="btn-delete" onclick="excluirTarefa(${tarefa.id})">×</button>
+                    </div>
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.error("Erro ao carregar lista:", error);
+    }
+}
+
+// Função para adicionar
+async function adicionarTarefa() {
+    const input = document.getElementById("inputNovaTarefa");
+
+    if (!input.value.trim()) {
+        alert("Digite uma tarefa antes de adicionar!");
+        return;
+    }
+
+    try {
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                descricao: input.value,
+                concluida: false
+            })
+        });
+
+        if (res.ok) {
+            input.value = ""; // Limpa o campo
+            listarTarefas(); // Atualiza a lista sem recarregar
+        }
+    } catch (error) {
+        alert("Erro ao conectar com o servidor Spring!");
+    }
+}
+
+// Função para excluir
+async function excluirTarefa(id) {
+    if (confirm("Excluir esta tarefa?")) {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        listarTarefas();
+    }
+}
+
+// CARREGAR AO INICIAR
+document.addEventListener("DOMContentLoaded", listarTarefas);
+</script>
+
+</body>
+</html>

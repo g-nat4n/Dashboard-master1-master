@@ -1,0 +1,199 @@
+.sidebar {
+    width: 250px;
+    /* Ajuste para alinhar com a altura das caixas vizinhas */
+    height: 100%;
+    min-height: 500px; /* Ou o valor exato da caixa de Notas/Calendário */
+
+    border-radius: 20px;
+    padding: 25px;
+    color: white;
+    backdrop-filter: blur(15px);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* 1. TOPO: Perfil fixo no topo */
+.perfil {
+    margin-bottom: 20px;
+}
+
+/* 2. MEIO: Centraliza as divs 'Teste' no espaço restante */
+.menu-meio {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    /* Mágica para centralizar verticalmente no meio da sidebar */
+    margin-top: auto;
+    margin-bottom: auto;
+
+    width: 100%;
+}
+
+.item-menu {
+    padding: 15px 25px;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative; /* ESSENCIAL para a linha se posicionar */
+
+    margin-left: -21px;
+    width: calc(100% + 42px);
+    box-sizing: border-box;
+    display: block; /* Garante que o <a> se comporte como bloco */
+    text-decoration: none; /* Remove sublinhado do link */
+}
+
+/* Criando a linha customizada */
+.item-menu::after {
+    content: "";
+    position: absolute;
+    bottom: 0;         /* Cola no fundo do item */
+    left: 15%;        /* Começa a 15% da esquerda */
+    width: 70%;       /* Ocupa apenas 70% da largura total */
+    height: 1px;      /* Espessura da linha */
+    background-color: rgba(255, 255, 255, 0.3); /* Cor branca transparente */
+    transition: all 0.3s ease;
+}
+
+/* Remove a linha do último item */
+.item-menu:last-child::after {
+    display: none;
+}
+
+/* Efeito Hover na linha (opcional: a linha brilha junto) */
+.item-menu:hover::after {
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 80%; /* A linha cresce um pouco no hover */
+    left: 10%;
+}
+
+/* Efeito Hover na linha (opcional: a linha brilha junto) */
+.item-menu:hover::after {
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 80%; /* A linha cresce um pouco no hover */
+    left: 10%;
+}
+
+/* 3. BAIXO: Botão Sair fixo no final */
+.sair {
+    margin-top: 20px; /* Garante um respiro mínimo caso a tela encolha */
+}
+
+
+.sair a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sair a:hover {
+    background-color: rgba(39, 174, 96, 0.6);
+    border-radius: 20px;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 20px rgba(39, 174, 96, 0.6),
+                inset 0 0 15px rgba(39, 174, 96, 0.4);
+}
+
+
+.menu-meio a{
+    padding: 15px 25px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+
+    /* DISTÂNCIA DE 4PX DA BORDA */
+    /* Recuamos 21px (25px do padding - 4px de sobra) */
+    margin-left: -21px;
+    /* Compensamos os 21px de cada lado (21 + 21 = 42) */
+    width: calc(100% + 42px);
+    box-sizing: border-box;
+}
+
+/* EFEITO AO PASSAR O MOUSE (HOVER) */
+.item-menu:hover a{
+    background-color: rgba(39, 174, 96, 0.6);
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+
+    box-shadow: 0 0 20px rgba(39, 174, 96, 0.6),
+                inset 0 0 15px rgba(39, 174, 96, 0.4);
+}
+
+
+/*---------------------  perfil dash  ----------------------------------*/
+
+.perfil {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.perfil h2 {
+    font-size: 1.2em;
+    color: #27ae60;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.perfil-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.foto-perfil {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    border: 2px solid #27ae60;
+    object-fit: cover;
+    box-shadow: 0 0 15px rgba(39, 174, 96, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.foto-perfil:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(39, 174, 96, 0.6);
+}
+
+.nome-usuario {
+    font-size: 1em;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0;
+}
+
+.status-usuario {
+    font-size: 0.75em;
+    color: #27ae60; /* Verde para indicar online */
+    margin-top: 4px;
+    opacity: 0.8;
+}

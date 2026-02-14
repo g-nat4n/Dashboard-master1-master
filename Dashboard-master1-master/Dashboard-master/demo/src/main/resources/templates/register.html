@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar</title>
+
+    <link rel="stylesheet" href="/css/registrar.css">
+</head>
+
+<body>
+
+<video autoplay muted loop id="bg-video">
+    <source src="/videos/video.mp4" type="video/mp4">
+</video>
+
+<div class="container">
+    <h2>Criar conta</h2>
+    <form action="/register" method="post">
+        <input type="text" name="nome" required placeholder="Nome">
+        <input type="email" name="email" required placeholder="E-mail">
+        <input type="password" name="senha" required placeholder="Senha">
+        <button type="submit">Registrar</button>
+    </form>
+
+    <p class="texto">
+        Já tem conta?
+        <a href="/login">Entrar</a>
+    </p>
+</div>
+
+</body>
+</html>

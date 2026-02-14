@@ -1,0 +1,107 @@
+/* Reset básico */
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+
+ body {
+     font-family: 'Segoe UI', sans-serif;
+     overflow: hidden; /* Evita scroll na tela toda */
+ }
+
+ /* Vídeo de Fundo */
+ #bg-video {
+     position: fixed;
+     right: 0; bottom: 0;
+     min-width: 100%; min-height: 100%;
+     z-index: -1;
+     filter: brightness(0.3); /* Escurece o vídeo para o texto brilhar */
+ }
+
+ .layout {
+     display: flex;
+     height: 100vh;
+     padding: 20px;
+     gap: 20px;
+ }
+
+ /* Sidebar */
+ .sidebar {
+     width: 280px;
+     background: rgba(20, 20, 20, 0.8);
+     backdrop-filter: blur(10px);
+     border-radius: 20px;
+     border: 1px solid rgba(255, 255, 255, 0.1);
+     display: flex;
+     flex-direction: column;
+     padding: 30px;
+ }
+
+ .foto-perfil {
+     width: 60px !important;
+     height: 60px !important;
+     border-radius: 50%;
+     object-fit: cover;
+     display: block;
+     border: 2px solid #00ff88;
+ }
+
+ .item-menu {
+     display: block;
+     color: #bbb;
+     text-decoration: none;
+     padding: 15px 0;
+     transition: 0.3s;
+ }
+
+ .item-menu:hover, .active {
+     color: #00ff88;
+     text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+ }
+
+ /* Área do Conteúdo */
+ .main-content {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     gap: 20px;
+ }
+
+ /* Cards de Cima */
+ .top-cards {
+     display: flex;
+     gap: 20px;
+     height: 150px;
+ }
+
+ .mini-card, .bottom-card {
+     background: rgba(255, 255, 255, 0.05);
+     backdrop-filter: blur(15px);
+     border: 1px solid rgba(255, 255, 255, 0.1);
+     border-radius: 20px;
+     padding: 20px;
+     transition: 0.3s;
+ }
+
+ .mini-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+ .mini-card:hover { border-color: #00ff88; }
+
+ .valor-neon {
+     font-size: 2.5rem;
+     font-weight: bold;
+     color: #00ff88;
+     text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+ }
+
+ /* Card do Gráfico */
+ .bottom-card {
+     flex: 1; /* Faz ocupar o resto da tela */
+     display: flex;
+     flex-direction: column;
+ }
+
+ .chart-container {
+     flex: 1;
+     position: relative;
+     width: 100%;
+ }
+
+ h3 { color: #fff; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }

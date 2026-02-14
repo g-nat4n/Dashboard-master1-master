@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações de Perfil</title>
+    <link rel="stylesheet" href="/css/cadastro.css">
+</head>
+<body>
+
+<video autoplay muted loop id="bg-video">
+    <source src="/videos/video.mp4" type="video/mp4">
+</video>
+
+<div class="main-content">
+    <div class="container-perfil">
+        <h2>Configurações de Perfil</h2>
+
+        <div class="foto-secao">
+            <img th:src="${usuario?.fotoUrl != null ? usuario.fotoUrl : '/videos/default-avatar.png'}"
+                 id="preview-foto"
+                 class="foto-edit">
+
+            <label for="upload-foto" class="btn-upload">Alterar Foto</label>
+            <input type="file" id="upload-foto" hidden>
+        </div>
+
+            <div class="input-group">
+                <label>Nome</label>
+                <input type="text"
+                       th:value="${usuario != null ? usuario.nome : ''}"
+                       placeholder="Seu nome"
+                       id="nome"
+                       class="input-dash">
+            </div>
+
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email"
+                       th:value="${usuario != null ? usuario.email : ''}"
+                       placeholder="seu@email.com"
+                       id="email"
+                       class="input-dash">
+            </div>
+
+            <div class="input-group">
+                <label>Nova Senha</label>
+                <input type="password" placeholder="Digite para alterar" id="senha" class="input-dash">
+            </div>
+
+            <button type="submit" class="btn-salvar">Salvar Alterações</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('upload-foto').addEventListener('change', async function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // 1. Mostrar preview na tela na hora
+        const reader = new FileReader();
+        reader.onload = (e) => document.getElementById('preview-foto').src = e.target.result;
+        reader.readAsDataURL(file);
+
+        // 2. Enviar para o servidor
+        const formData = new FormData();
+        formData.append("foto", file);
+
+        try {
+            const response = await fetch('/api/usuario/upload-foto', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert("Foto atualizada com sucesso!");
+            } else {
+                alert("Erro ao enviar foto.");
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+        }
+    });
+
+    document.querySelector('.btn-salvar').addEventListener('click', async (e) => {
+    e.preventDefault(); // Não deixa a página atualizar sozinha
+
+    const dados = {
+        nome: document.getElementById('nome').value,
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value
+    };
+
+    const response = await fetch('/api/usuario/atualizar-dados', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+    });
+
+    if (response.ok) {
+        alert("Perfil atualizado!");
+        window.location.href = "/dashboard"; // Volta para o dash para ver a mudança
+    } else {
+        alert("Erro ao salvar dados.");
+    }
+});
+</script>
+</body>
+</html>

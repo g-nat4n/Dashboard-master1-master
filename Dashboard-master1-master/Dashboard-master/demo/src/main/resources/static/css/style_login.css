@@ -1,0 +1,132 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: image(img)
+}
+
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+/* Efeito escuro por cima da imagem */
+body::after {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.068);
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.login-box {
+    position: relative;
+    z-index: 1;
+    width: 240px;      /* tamanho equilibrado */
+    padding: 22px;        /* antes 40px */
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.6);
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0);
+    color: white;
+    text-align: center;
+}
+
+.login-box h1 {
+    font-size: 20px;
+}
+
+.input-group input {
+    font-size: 13px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid white;
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+.input-group input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.options {
+    margin-top: 2%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.options a {
+    color: white;
+    text-decoration: none;
+}
+
+.options a:hover {
+    text-decoration: underline;
+}
+
+button {
+    width: 100%;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 25px;
+    border: none;
+    background: white;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #ddd;
+}
+
+.register {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.register a {
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.register a:hover{
+  text-decoration: underline;
+}
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}

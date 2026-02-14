@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style_login.css">
+
+    <title>Login</title>
+</head>
+<body>
+
+<video autoplay muted loop id="bg-video">
+    <source src="/videos/video.mp4" type="video/mp4">
+</video>
+
+    <div class="login-box">
+        <h1>Login</h1>
+
+        <form method="post" action="/login">
+            <div class="input-group">
+                <input type="email" name="username" placeholder="Email" required>
+    </div>
+
+    <div class="input-group">
+
+        <input type="password" name="password" placeholder="Senha" required>
+    </div>
+
+            <div class="options">
+                <label>
+                    <input type="checkbox"> Lembre-me
+                </label>
+                <a href="#">Esqueci a senha</a>
+            </div>
+
+            <button type="submit">Logar</button>
+
+            <p class="register">
+                Não tem uma conta? <a href="register">Registre-se</a>
+            </p>
+        </form>
+    </div>
+    </div>
+</body>
+</html>

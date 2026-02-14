@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Estatísticas de Progresso</title>
+    <link rel="stylesheet" href="/css/progresso.css">
+    <link rel="stylesheet" href="/css/dashboard2.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<video autoplay muted loop id="bg-video">
+    <source src="/videos/video.mp4" type="video/mp4">
+</video>
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="perfil">
+            <h2>Meu Dashboard</h2>
+
+            <div class="perfil-info">
+                <a th:href="@{/cadastro}">
+                    <img th:src="${usuario?.fotoUrl != null ? usuario.fotoUrl : '/videos/default-avatar.png'}"
+                         alt="Foto de Perfil"
+                         class="foto-perfil"
+                         style="cursor: pointer;"> </a>
+
+                <div class="texto-perfil">
+                    <p class="nome-usuario" th:text="${usuario?.nome != null ? usuario.nome : 'Usuário'}">Nome do Usuário</p>
+                    <p class="status-usuario">Online</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-meio">
+            <a th:href="@{/cadastro}" class="item-menu">Cadastro</a>
+            <a th:href="@{/progresso}" class="item-menu active">Progresso</a>
+            <div class="item-menu">Teste 3</div>
+            <div class="item-menu">Teste 4</div>
+        </div>
+
+        <div class="sair">
+            <a href="/login">Sair</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-cards">
+            <div class="mini-card">
+                <h3>Total da Semana</h3>
+                <p class="valor-neon" th:text="${total != null ? total : '45'}">45</p>
+            </div>
+            <div class="mini-card">
+                <h3>Média Diária</h3>
+                <p class="valor-neon" th:text="${media != null ? media : '6.4'}">6.4</p>
+            </div>
+        </div>
+
+        <div class="bottom-card">
+            <h3>Progresso Semanal</h3>
+            <div class="chart-container">
+                <canvas id="graficoProgresso"></canvas>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script th:inline="javascript">
+    const dadosJava = [[${dados}]];
+    const ctx = document.getElementById('graficoProgresso').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            datasets: [{
+                label: 'Tarefas',
+                data: dadosJava || [5, 10, 8, 15, 12, 20, 18],
+                borderColor: '#00ff88',
+                backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff' } },
+                x: { ticks: { color: '#fff' } }
+            }
+        }
+    });
+
+    function adicionarTarefa(descricao) {
+    const novaTarefa = {
+        id: Date.now(),
+        texto: descricao,
+        concluida: false
+    };
+    // Aqui você enviaria para o seu Controller do Spring Boot
+    console.log("Salvando no banco:", novaTarefa);
+}
+</script>
+</body>
+</html>

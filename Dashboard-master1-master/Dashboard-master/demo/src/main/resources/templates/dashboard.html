@@ -239,22 +239,54 @@ renderizarCalendario();
 
 
 
-    // Bloco de notas
+
 
 const textarea = document.querySelector('.box.anotacao textarea');
 
-// 1. Ao carregar a página, verifica se já existe algo salvo
-window.onload = () => {
-    const notaSalva = localStorage.getItem('minhasAnotacoes');
-    if (notaSalva) {
-        textarea.value = notaSalva;
-    }
-};
+// Função para carregar a anotação do backend
+async function carregarAnotacao() {
+    try {
+        const resposta = await fetch("http://localhost:8080/api/anotacoes");
+        if (!resposta.ok) throw new Error("Não foi possível carregar a anotação");
 
-// 2. Salva automaticamente enquanto o usuário digita
+        const anotacao = await resposta.json();
+        textarea.value = anotacao.texto || "";
+    } catch (erro) {
+        console.error("Erro ao carregar anotação:", erro);
+        // fallback localStorage
+        const notaSalva = localStorage.getItem('minhasAnotacoes');
+        if (notaSalva) textarea.value = notaSalva;
+    }
+}
+
+// Função para salvar anotação no backend
+async function salvarAnotacao(texto) {
+    try {
+        await fetch("http://localhost:8080/api/anotacoes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto })
+        });
+    } catch (erro) {
+        console.error("Erro ao salvar anotação:", erro);
+        // fallback localStorage
+        localStorage.setItem('minhasAnotacoes', texto);
+    }
+}
+
+// Carrega a anotação ao iniciar a página
+window.addEventListener("DOMContentLoaded", carregarAnotacao);
+
+// Salva automaticamente enquanto o usuário digita
+let timeout;
 textarea.addEventListener('input', () => {
-    localStorage.setItem('minhasAnotacoes', textarea.value);
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        salvarAnotacao(textarea.value);
+    }, 500); // salva a cada 0,5s após parar de digitar
 });
+
+
 
 
 const API_URL = "http://localhost:8080/api/tarefas";
